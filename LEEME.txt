@@ -1,0 +1,33 @@
+KATRI LOCOS - APP ANDROID (para compilar con GitHub)
+=====================================================
+
+PASOS (una sola vez, ~15 minutos, todo desde el navegador del PC):
+
+1. Entra a https://github.com y crea una cuenta gratis (o inicia sesion).
+2. Arriba a la derecha: "+" > "New repository". Nombre: katri-android.
+   Marca "Private". Pulsa "Create repository".
+3. En la pagina del repositorio nuevo: "uploading an existing file".
+   IMPORTANTE: descomprime este .zip y arrastra TODO el contenido de la carpeta
+   (incluida la carpeta oculta ".github" y la carpeta "app") a la pagina.
+   Si no te deja subir la carpeta ".github", ve a "Add file > Create new file",
+   escribe el nombre  .github/workflows/apk.yml  y pega el contenido del archivo apk.yml.
+   Pulsa "Commit changes".
+4. Ve a la pestana "Actions". Si pide activar, pulsa el boton verde.
+   Elige "Compilar APK" > "Run workflow" > "Run workflow". Espera 5-8 minutos (circulo verde).
+5. Entra a esa ejecucion terminada; abajo en "Artifacts" descarga "KatriLocos-apk" (un zip con app-debug.apk).
+6. Pasa app-debug.apk al celular (WhatsApp, Drive, cable). Al abrirlo, Android pedira permitir
+   "instalar apps desconocidas" para esa app (WhatsApp/Archivos): permitelo e instala.
+7. Abre "Katri Locos". La primera vez:
+   - Acepta el permiso de Bluetooth.
+   - Escribe la direccion del PC (ej. 192.168.110.138), con el celular en el wifi del restaurante.
+     La app descarga una copia de los datos (necesita estar conectada al PC esa primera vez).
+8. Empareja la impresora en Ajustes de Android > Bluetooth (clave 0000 o 1234).
+   En la app: pestana Config > "Esta app (Android)" > elige la impresora > Guardar > Imprimir prueba.
+
+NOTAS
+- La impresora Bluetooth se conecta a un solo aparato a la vez: si el PC la tiene conectada,
+  el celular no podra imprimir hasta que el PC la suelte (apaga el PC o la impresora y vuelve a encender).
+- Con el PC encendido, el pedido se imprime en el PC. Sin PC, se imprime desde el celular y se sincroniza luego.
+- Si cambiamos algo del programa (menu, pantallas), hay que volver a compilar el APK
+  (cambiar los archivos en GitHub y repetir paso 4-6). Los DATOS (pedidos, menu) viven en el PC y se sincronizan solos.
+- Es un APK de prueba (debug): sirve perfectamente para uso interno.

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0a">
+<title>Katri Locos</title>
+<link rel="icon" href="/logo.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/static/icon-192.png">
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<div id="app">
+  <div class="titlebar" id="titlebar">
+    <div class="tb-marca pywebview-drag-region">
+      <img src="/logo.png" alt=""><b>Katri Locos</b><span id="tb-sub">Caja y pedidos</span>
+    </div>
+    <div class="tb-botones">
+      <button id="tb-min" title="Minimizar"><svg viewBox="0 0 14 14"><path d="M2 7.5h10"/></svg></button>
+      <button id="tb-max" title="Maximizar"><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg></button>
+      <button id="tb-close" class="cerrar" title="Cerrar"><svg viewBox="0 0 14 14"><path d="M2.5 2.5l9 9M11.5 2.5l-9 9"/></svg></button>
+    </div>
+  </div>
+  <div class="zig" id="zig"></div>
+  <div class="nav" id="nav"></div>
+  <main id="main"></main>
+</div>
+<script src="/static/offline.js"></script>
+<script src="/static/app.js"></script>
+<script>if("serviceWorker" in navigator && location.protocol.startsWith("http") && !window.pywebview && !window.KatriNative){navigator.serviceWorker.register("/sw.js").catch(function(){});}</script>
+</body>
+</html>
