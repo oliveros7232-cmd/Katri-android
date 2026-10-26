@@ -166,14 +166,23 @@ public class Puente {
                         if (ad == null || !ad.isEnabled()) throw new Exception("Enciende el Bluetooth del celular.");
                         ad.cancelDiscovery();
                         BluetoothDevice d = ad.getRemoteDevice(mac);
-                        try {
-                            s = d.createRfcommSocketToServiceRecord(SPP);
-                            s.connect();
-                        } catch (Exception e1) {
-                            try { if (s != null) s.close(); } catch (Exception ign) { /* nada */ }
-                            s = (BluetoothSocket) d.getClass().getMethod("createRfcommSocket", int.class).invoke(d, 1);
-                            s.connect();
+                        String detalle = "";
+                        for (int intento = 0; intento < 4 && s == null; intento++) {
+                            BluetoothSocket c = null;
+                            try {
+                                if (intento == 0) c = d.createRfcommSocketToServiceRecord(SPP);
+                                else if (intento == 1) c = d.createInsecureRfcommSocketToServiceRecord(SPP);
+                                else if (intento == 2) c = (BluetoothSocket) d.getClass().getMethod("createRfcommSocket", int.class).invoke(d, 1);
+                                else c = (BluetoothSocket) d.getClass().getMethod("createInsecureRfcommSocket", int.class).invoke(d, 1);
+                                c.connect();
+                                s = c;
+                            } catch (Exception e1) {
+                                detalle = e1.getClass().getSimpleName() + ": " + e1.getMessage();
+                                try { if (c != null) c.close(); } catch (Exception ign) { /* nada */ }
+                                Thread.sleep(700);
+                            }
                         }
+                        if (s == null) throw new Exception("No se pudo conectar con la impresora (" + detalle + "). Apaga y enciende la impresora, cierra otras apps que la usen y reintenta.");
                         OutputStream os = s.getOutputStream();
                         byte[] datos = escpos(texto, sinTildes, doble);
                         int i = 0;
@@ -188,7 +197,7 @@ public class Puente {
                         ok = true;
                     } catch (Exception e) {
                         String m = e.getMessage();
-                        msg = (m != null && m.length() < 120 && !m.contains("read failed"))
+                        msg = (m != null && m.length() < 260)
                                 ? m : "No se pudo conectar con la impresora. Enciéndela y acércala al celular.";
                     } finally {
                         try { if (s != null) s.close(); } catch (Exception ign) { /* nada */ }
