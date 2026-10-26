@@ -164,7 +164,7 @@ public class Puente {
                         if (!permisoBt()) throw new Exception("Falta el permiso de Bluetooth.");
                         BluetoothAdapter ad = BluetoothAdapter.getDefaultAdapter();
                         if (ad == null || !ad.isEnabled()) throw new Exception("Enciende el Bluetooth del celular.");
-                        ad.cancelDiscovery();
+                        try { ad.cancelDiscovery(); } catch (Throwable ign) { /* no hace falta */ }
                         BluetoothDevice d = ad.getRemoteDevice(mac);
                         String detalle = "";
                         for (int intento = 0; intento < 4 && s == null; intento++) {
