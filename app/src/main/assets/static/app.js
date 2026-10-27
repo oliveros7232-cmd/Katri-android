@@ -276,7 +276,7 @@ async function tomarPedido(dest) {
       <div class="t">${h(l.p.nombre)}<div class="d">${detalleItem({ opciones: { grupos: l.grupos, quitar: l.quitar, extras: l.extras, nota: l.nota } })}</div></div>
       <span class="p dinero">${money(precioLinea(l))}</span></div>`).join("") : `<div class="vacio">Toca un producto para agregarlo</div>`;
     const dom = dest.tipo === "domicilio" || (dest.tipo === "cuenta" && dest.cuenta.tipo === "domicilio");
-    $("#cpie", m.el).innerHTML = `${dom && dest.tipo === "domicilio" ? `<div class="subl"><span>+ envase para llevar al cerrar</span></div>` : ""}<div class="total-grande" style="padding-top:0"><span>Este pedido</span><span class="v dinero" style="font-size:26px">${money(totalCart())}</span></div><div class="fila"><button class="btn" data-act="salir">Cancelar</button><button class="btn pri crece" data-act="enviar" ${cart.length ? "" : "disabled"}>Enviar a cocina</button></div>`;
+    $("#cpie", m.el).innerHTML = `<div class="total-grande" style="padding-top:0"><span>Este pedido</span><span class="v dinero" style="font-size:26px">${money(totalCart())}</span></div><div class="fila"><button class="btn" data-act="salir">Cancelar</button><button class="btn pri crece" data-act="enviar" ${cart.length ? "" : "disabled"}>Enviar a cocina</button></div>`;
   };
   pCats(); pProds(); pCarro();
   const agregar = (p, cfg) => {
@@ -390,7 +390,7 @@ async function vDomicilios(silencioso) {
 }
 function formDomicilio() {
   const m = modal("Nuevo domicilio", { clase: "medio" });
-  m.cuerpo.innerHTML = `<label>Teléfono</label><input id="d-t" type="tel" inputmode="tel" autocomplete="off" placeholder="Si ya pidió antes, se llenan sus datos"><div id="d-aviso" class="muted" style="font-size:13px;min-height:18px"></div><label>Nombre del cliente</label><input id="d-n" autocomplete="off"><label>Dirección *</label><input id="d-d" autocomplete="off"><label>Observaciones</label><input id="d-o" autocomplete="off" placeholder="Ej. torre 2, apto 301, pagar con billete de 50"><label>Envase para llevar</label><input id="d-c" type="number" min="0" step="100" value="${(S.info && S.info.bandeja_domicilio) ?? 1000}"><p class="muted" style="font-size:13px">Se suma a la cuenta del domicilio. Puedes cambiar el valor.</p>`;
+  m.cuerpo.innerHTML = `<label>Teléfono</label><input id="d-t" type="tel" inputmode="tel" autocomplete="off" placeholder="Si ya pidió antes, se llenan sus datos"><div id="d-aviso" class="muted" style="font-size:13px;min-height:18px"></div><label>Nombre del cliente</label><input id="d-n" autocomplete="off"><label>Dirección *</label><input id="d-d" autocomplete="off"><label>Observaciones</label><input id="d-o" autocomplete="off" placeholder="Ej. torre 2, apto 301, pagar con billete de 50"><p class="muted" style="font-size:13px">Si lleva envase, agrégalo como producto («Envase para llevar»).</p>`;
   let tb;
   $("#d-t", m.el).addEventListener("input", (e) => {
     clearTimeout(tb);
@@ -410,7 +410,7 @@ function formDomicilio() {
   acciones(m.el, {
     no: () => m.cerrar(),
     ok: () => {
-      const datos = { cliente: $("#d-n", m.el).value, telefono: $("#d-t", m.el).value, direccion: $("#d-d", m.el).value, notas: $("#d-o", m.el).value, envase: $("#d-c", m.el).value === "" ? 0 : +$("#d-c", m.el).value };
+      const datos = { cliente: $("#d-n", m.el).value, telefono: $("#d-t", m.el).value, direccion: $("#d-d", m.el).value, notas: $("#d-o", m.el).value };
       if (!datos.direccion.trim()) return toast("Falta la dirección", true);
       m.cerrar(); tomarPedido({ tipo: "domicilio", datos });
     },
@@ -551,7 +551,7 @@ async function vConfig() {
   const hayActual = !imp.puerto || imp.puertos.some((x) => x.puerto === imp.puerto);
   const main = vista(`<h1 style="font-size:24px;margin-bottom:12px">Configuración</h1>
     <div class="dos-col">
-    <div class="tarjeta"><h3 style="font-size:15px">Negocio</h3><label>Nombre</label><input id="c-neg" value="${h(info.negocio)}"><label>Teléfono</label><input id="c-tel" value="${h(info.telefono)}"><label>Envase para llevar en domicilios (valor predeterminado)</label><input id="c-ban" type="number" min="0" step="100" value="${info.bandeja_domicilio}"><div style="margin-top:12px"><button class="btn pri" data-act="gneg">Guardar</button></div></div>
+    <div class="tarjeta"><h3 style="font-size:15px">Negocio</h3><label>Nombre</label><input id="c-neg" value="${h(info.negocio)}"><label>Teléfono</label><input id="c-tel" value="${h(info.telefono)}"><div style="margin-top:12px"><button class="btn pri" data-act="gneg">Guardar</button></div></div>
     <div class="tarjeta"><h3 style="font-size:15px">Conexión del celular</h3><p class="muted" style="font-size:14px">El celular y este PC deben estar en el mismo wifi. En el navegador del celular abre:</p><div class="pre" style="font-size:16px;color:var(--amarillo)">${h(info.url_mesero)}</div><p class="muted" style="font-size:12px">Si no abre, permite el acceso cuando Windows pregunte por el firewall (redes privadas). Conviene asignar una IP fija a este PC en el router.</p></div></div>
     ${window.KatriNative ? tarjetaNativa() : ""}
     <div class="tarjeta" style="margin-top:14px"><h3 style="font-size:15px">Impresora de cocina (58 mm)</h3>
@@ -565,7 +565,7 @@ async function vConfig() {
     <datalist id="ubis"><option>Adentro</option><option>Afuera</option><option>Terraza</option><option>Barra</option><option>Mesa alta afuera</option><option>Mesa alta adentro</option></datalist>
     <div class="lista-edit" style="margin-top:10px">${mesas.map((x) => filaMesa(x)).join("")}</div></div>`);
   acciones(main, {
-    gneg: async () => { try { await api("/api/config", "POST", { negocio: $("#c-neg").value, telefono: $("#c-tel").value, bandeja_domicilio: +$("#c-ban").value || 0 }); toast("Guardado ✓"); } catch (e) { falla(e); } },
+    gneg: async () => { try { await api("/api/config", "POST", { negocio: $("#c-neg").value, telefono: $("#c-tel").value }); toast("Guardado ✓"); } catch (e) { falla(e); } },
     nguardar: () => { window.KatriNative.fijarServidor($("#n-host").value); window.KatriNative.fijarImpresora($("#n-imp").value); toast("Guardado ✓"); OFF.intentarSync(false); },
     nprueba: async () => { window.KatriNative.fijarImpresora($("#n-imp").value); toast("Enviando prueba…", false, 2000); const pr = await OFF.imprimirNativo("PRUEBA DE IMPRESION\n================================\nKatri Locos Street Food\nSi lees esto, la impresora\nquedo bien configurada.\n================================"); if (pr.ok) toast("Prueba enviada ✓ Revisa el papel", false, 4000); else toast(pr.msg || "No se pudo imprimir", true, 7000); },
     gimp: async () => { try { await api("/api/impresora", "POST", { puerto: $("#i-pto").value, sin_tildes: $("#i-til").checked }); toast("Impresora guardada ✓"); } catch (e) { falla(e); } },
