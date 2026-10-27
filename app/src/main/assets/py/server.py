@@ -240,7 +240,7 @@ def init_db():
             c.execute("insert into mesas(nombre,ubicacion,orden) values(?,?,?)", ("Mesa %d" % i, "", i))
         defaults = {
             "seed": "1", "negocio": "Katri Locos Street Food", "telefono": "313 653 1708",
-            "bandeja_domicilio": "1000",
+            "bandeja_domicilio": "0",
         }
         for k, v in defaults.items():
             c.execute("insert or replace into config(clave,valor) values(?,?)", (k, v))
@@ -291,6 +291,18 @@ def init_db():
                 cfg["quitar"] = [x for x in cfg.get("quitar", []) if x.lower() not in ("tajín", "tajin")]
                 c.execute("update productos set config=? where id=?", (json.dumps(cfg, ensure_ascii=False), p["id"]))
         c.execute("insert or replace into config(clave,valor) values('mig_salsas_tajin','1')")
+        c.commit()
+    if not c.execute("select 1 from config where clave='mig_envase_producto'").fetchone():
+        if not c.execute("select 1 from productos where nombre='Envase para llevar'").fetchone():
+            k = c.execute("select id from categorias where nombre='Otros'").fetchone()
+            if k:
+                kid = k["id"]
+            else:
+                kid = c.execute("insert into categorias(nombre,orden) values('Otros',(select coalesce(max(orden),0)+1 from categorias))").lastrowid
+            c.execute("insert into productos(categoria_id,nombre,descripcion,precio,config,orden,encargo) values(?,?,?,?,?,?,0)",
+                      (kid, "Envase para llevar", "", 1000, json.dumps({"grupos": [], "quitar": []}), 0))
+        c.execute("insert or replace into config(clave,valor) values('bandeja_domicilio','0')")
+        c.execute("insert or replace into config(clave,valor) values('mig_envase_producto','1')")
         c.commit()
     c.close()
 
@@ -497,7 +509,7 @@ def nuevo_domicilio(c, body):
         " values('domicilio',?,?,?,?,?,?,'abierta',?,?)",
         ((body.get("cliente") or "").strip(), (body.get("telefono") or "").strip(),
          body["direccion"].strip(), (body.get("notas") or "").strip(),
-         0, max(0, int(body.get("envase") if body.get("envase") not in (None, "") else (cfg.get("bandeja_domicilio", 0) or 0))),
+         0, 0,
          body.get("mesero", ""), ahora())).lastrowid
     ronda = agregar_items(c, cid, body.get("items"))
     guardar_cliente(c, body)
